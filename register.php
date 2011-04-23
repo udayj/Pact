@@ -1,5 +1,13 @@
 <?php
-
+session_start();
+if(isset($_SESSION['not_register']))
+{
+  if($_SESSION['not_register']=='true')
+  {
+    unset($_SESSION['not_register']);
+    echo 'Username already in use';
+  }
+}
 ?>
 
 <html>
@@ -22,7 +30,7 @@ function validate(text)
 }
 </script>
 <body>
-<form action="validateRegistration.php" method="post">
+<form action="confirmRegistration.php" method="post">
   Username: <input type="text" name="username" onkeyup="validate(this.value)"/><br />
   Password: <input type="text" name="password" /><br />
   Email Id: <input type="text" name="emailid" /><br />

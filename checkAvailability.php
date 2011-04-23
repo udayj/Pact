@@ -1,6 +1,7 @@
 <?php
  require_once '/home/uday/code/nrk-predis-8787930/examples/SharedConfigurations.php';
 
+//Shared Configuration changed to use db 0
 $redis = new Predis\Client($single_server);
 
 
