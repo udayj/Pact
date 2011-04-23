@@ -5,14 +5,29 @@ require_once '/home/uday/code/nrk-predis-8787930/examples/SharedConfigurations.p
 //Shared Configuration changed to use db 0
 $redis = new Predis\Client($single_server);
 
+if(!isset($_POST['username']) || !isset($_POST['password']) || !isset($_POST['emailid']))
+{
+   $_SESSION['not_register']='true';
+   echo "prob 1";
+  //header('Location: register.php');
+}
 $username=$_POST['username'];
 $password=$_POST['password'];
 $emailid=$_POST['emailid'];
-if($redis->sismember('usernames',$username))
+echo $username.'-'.$password.'-'.$emailid.'-';
+if($username=='' || $password=='' || $emailid=='')
+{
+    $_SESSION['not_register']='true';
+   //echo "prob 2";
+   header('Location: register.php');
+} 
+else if($redis->sismember('usernames',$username))
 {
   $_SESSION['not_register']='true';
+  //echo "prob 3";
   header('Location: register.php');
 }
+else{
 $status=$redis->sadd('usernames',$username);
 if($status)
 {
@@ -34,5 +49,5 @@ if($status)
   mail($to,$subject,$message,$headers);
   header('Location: welcome.php');
 }
-
+}
 ?>

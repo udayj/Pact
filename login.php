@@ -1,6 +1,9 @@
 <?php
 session_start();
+require_once '/home/uday/code/nrk-predis-8787930/examples/SharedConfigurations.php';
 //echo "Checking with github"
+
+$redis = new Predis\Client($single_server);
 
 if(!isset($_POST['username']) || !isset($_POST['password']))
 {
@@ -11,16 +14,29 @@ else
 	echo 'Ok username, password given'.'<br>';
 	$username=$_POST['username'];
 	$password=$_POST['password'];
-	if($username=='udayj')
-	{
-	  if($password=='password')
+        
+        $uid=$redis->get('username:'.$username.':uid');
+        if($uid)
+        {
+	  if(md5($password)==$redis->get('uid:'.$uid.':password'))
 	  {
-	     echo 'Correct username password'.'<br>';
-             echo 'Logged in';
-             echo $_COOKIE['PHPSESSID'].'<br>';
-             $_SESSION['logged in']='true';
-             $_SESSION['counter']=12345;
-             header('refresh:5;url=mainpage.php');
+             $activationid=$redis->get('uid:'.$uid.':activationid');
+             if($redis->get('activationid:'.$activationid)=='true')
+             {
+		     echo 'Correct username password'.'<br>';
+		     echo 'Logged in';
+		     echo $_COOKIE['PHPSESSID'].'<br>';
+		     session_regenerate_id();
+		     $_SESSION['logged in']='true';
+		     $_SESSION['username']=$username;
+		     $_SESSION['uid']=$uid;
+		     header('refresh:5;url=mainpage.php');
+	     }
+             else
+             {
+                echo 'Account not yet activated	';
+                header('refresh:5;url=mainpage.php');
+             }
 	  }
 	  else
 	  {
