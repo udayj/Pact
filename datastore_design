@@ -1,0 +1,51 @@
+Add Expense
+Remove Expense
+Edit Expense
+Bill Split - Equal Split,Unequal Split
+Show Expense by tag id
+Show expense grouped by date
+
+Expense : Date/Amt/Description/Tags
+SharedExpense (derives from Expense) : Expense + Paid By  , Expense <Contributions - uid,amt>
+
+
+
+uid:<>:username
+uid:<>:password
+username:<>:uid
+uid:<>:emailid
+uid:<>:activationid
+activationid:<> -> t/f
+global:nextUserId -> gives next available user id
+
+uid:<>:nextExpenseId ->gives next unique expense id for this user
+
+uid:<>:expenses -> list of expense ids
+eid:<>:date
+eid:<>:amt
+eid:<>:desc
+eid:<>:tags -> set of tagnames
+uid:<>:tagname:<>:expenses ->set of expenses for this category
+eid:<>:type ->normal/shared
+eid:<>:contributions ->list of uids involved in this transaction
+eid:<>:exp_contrib -> list of expense contributions corresponding to eid:<>:contributions list
+eid:<>:paid by -> uid of person who paid for this transaction
+
+Add Expense
+user enters amt, desc
+user can edit date (default current date)
+send information to addexpense.php
+-create new expense by using new exp id
+user can specify whether it is a shared expense 
+use enters paid by whom (default paid by user)
+user enters people involved in transaction (can enter email id in which case email is sent out to people mentioned)
+user can also specify split type (default equal)
+in case of unequal split, user can enter information about individual share in expense
+user can specify tags (choose from thos already created or create new tags)
+
+Remove expense
+-rem the indicated expense id from user expense list and also from tag lists
+
+Might not implement shared expense initially
+
+
