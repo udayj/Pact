@@ -7,7 +7,7 @@ $redis = new Predis\Client($single_server);
 
 if(!isset($_POST['username']) || !isset($_POST['password']))
 {
-  echo 'Username or password not supplied';
+  errormsg();
 }
 else
 {
@@ -30,23 +30,31 @@ else
 		     $_SESSION['logged in']='true';
 		     $_SESSION['username']=$username;
 		     $_SESSION['uid']=$uid;
-		     header('refresh:5;url=mainpage.php');
+		     header('Location: mainpage.php');
 	     }
              else
              {
-                echo 'Account not yet activated	';
-                header('refresh:5;url=mainpage.php');
+                $_SESSION['notactivate']='true';
+                //echo 'Account not yet activated	';
+                header('Location: mainpage.php');
              }
 	  }
 	  else
 	  {
-	     echo 'Incorrect username or password given'.'<br>';
-             header('refresh:5;url=mainpage.php');
+	   //  echo 'Incorrect username or password given'.'<br>';
+             errormsg();
+           //  header('refresh:5;url=mainpage.php');
 	  }
 	}
 	else
 	{
-	    echo 'Incorrect username or password given'.'<br>';
+           errormsg();
+	   // echo 'Incorrect username or password given'.'<br>';
 	}
+}
+function errormsg()
+{
+  $_SESSION['incorrect']='true';
+  header('Location: mainpage.php');
 }
 ?>

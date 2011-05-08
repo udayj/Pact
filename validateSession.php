@@ -4,7 +4,7 @@ function validateSession()
 {
   if(!isset($_SESSION['logged in']))
   {
-    echo 'You are not logged in currently....redirecting to login page';
+   // echo 'You are not logged in currently....redirecting to login page';
     
     return false;
   }
@@ -12,7 +12,7 @@ function validateSession()
   {
      if($_SESSION['logged in']!='true')
      {
-        echo 'You have been logged off....redirecting to login page';
+    //    echo 'You have been logged off....redirecting to login page';
        
         return false;
      }
