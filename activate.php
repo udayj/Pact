@@ -16,11 +16,11 @@ if($status)
   }
   else
   {
-    echo 'incorrect activation link';
+    echo 'Incorrect activation link';
   }
 }
 else
 {
-  echo 'incorrect activation link';
+  echo 'Incorrect activation link';
 }
 ?>

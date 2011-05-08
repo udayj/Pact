@@ -7,29 +7,29 @@ $redis = new Predis\Client($single_server);
 
 if(!isset($_POST['username']) || !isset($_POST['password']) || !isset($_POST['emailid']))
 {
-   $_SESSION['not_register']='true';
-   echo "prob 1";
-  //header('Location: register.php');
+   error('some of the fields were empty');
+    
 }
 $username=$_POST['username'];
 $password=$_POST['password'];
 $emailid=$_POST['emailid'];
-echo $username.'-'.$password.'-'.$emailid.'-';
+
 if($username=='' || $password=='' || $emailid=='')
 {
-    $_SESSION['not_register']='true';
-   //echo "prob 2";
-   header('Location: register.php');
+    error('some of the fields were empty');
 } 
 else if($redis->sismember('usernames',$username))
 {
-  $_SESSION['not_register']='true';
-  //echo "prob 3";
-  header('Location: register.php');
+  error('username unavailable');
+}
+else if($redis->sismember('email',$emailid))
+{
+  error('email id already linked to an account');
 }
 else{
+$redis->sadd('email',$emailid);
 $status=$redis->sadd('usernames',$username);
-if($status)
+if($status==1)
 {
   $userid=$redis->incr('global:nextUserId');
   $redis->set('uid:'.$userid.':username',$username);
@@ -46,8 +46,42 @@ if($status)
   $subject='Welcome to PACT';
   $message='http://localhost/Pact/activate.php?act='.$activationid;
   $headers='From:'.$from;
-  mail($to,$subject,$message,$headers);
+  $mailStatus=mail($to,$subject,$message,$headers);
+  
+  if($mailStatus==false)
+  {
+    $mailStatus=mail($to,$subject,$message,$headers);
+    
+    if($mailStatus==false)
+    {
+      undoActions($username,$emailid,$password,$userid,$activationid);
+      error('Technical problems...please try again later');
+    }
+  }
   header('Location: welcome.php');
 }
+else
+{
+  error('username unavailable');
+}
+}
+function error($message)
+{
+  $_SESSION['not_register']='true';
+  $_SESSION['reason']=$message;
+  header('Location: register.php');
+}
+function undoActions($username,$emailid,$password,$userid,$activationid)
+{
+  global $redis;
+  $redis->srem('email',$emailid);
+  $redis->srem('usernames',$username);
+  $redis->decr('global:nextUserId');
+ $redis->del('uid:'.$userid.':username');
+  $redis->del('username:'.$username.':uid');
+  $redis->del('uid:'.$userid.':password');
+  $redis->del('uid:'.$userid.':emailid');
+    $redis->del('uid:'.$userid.':activationid');
+  $redis->del('activationid:'.$activationid);
 }
 ?>
