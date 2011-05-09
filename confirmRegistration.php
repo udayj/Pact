@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '/home/uday/code/nrk-predis-8787930/examples/SharedConfigurations.php';
+require_once 'logger.php';
 
 //Shared Configuration changed to use db 0
 $redis = new Predis\Client($single_server);
@@ -28,10 +29,13 @@ else if($redis->sismember('email',$emailid))
 }
 else{
 $redis->sadd('email',$emailid);
+logMessage('Emailid added to email set for user:'.$emailid);
 $status=$redis->sadd('usernames',$username);
+logMessage('Username added to usernames set for user:'.$emailid);
 if($status==1)
 {
   $userid=$redis->incr('global:nextUserId');
+  logMessage('uid:'.$userid.' generated for user:'.$emailid);
   $redis->set('uid:'.$userid.':username',$username);
   $redis->set('username:'.$username.':uid',$userid);
   $redis->set('uid:'.$userid.':password',md5($password));
@@ -39,6 +43,7 @@ if($status==1)
   $activationid=md5($emailid);
   $redis->set('uid:'.$userid.':activationid',$activationid);
   $redis->set('activationid:'.$activationid,'false');
+  logMessage('User registered user:'.$emailid);
   session_regenerate_id();
   $_SESSION['registered']='true';
   $to=$emailid;
@@ -50,14 +55,17 @@ if($status==1)
   
   if($mailStatus==false)
   {
+    logMessage('Mail sending(1) failed for user:'.$emailid);
     $mailStatus=mail($to,$subject,$message,$headers);
     
     if($mailStatus==false)
     {
+      logMessage('Mail sending failed(2) for user:'.$emailid);
       undoActions($username,$emailid,$password,$userid,$activationid);
       error('Technical problems...please try again later');
     }
   }
+  logMessage('Regiatration complete .... redirecting to mainpage');
   header('Location: welcome.php');
 }
 else
@@ -73,6 +81,7 @@ function error($message)
 }
 function undoActions($username,$emailid,$password,$userid,$activationid)
 {
+  logMessage('Undo action called for user:'.$emailid);
   global $redis;
   $redis->srem('email',$emailid);
   $redis->srem('usernames',$username);

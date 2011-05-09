@@ -1,5 +1,7 @@
 <?php
 require_once 'validateSession.php';
+require_once 'logger.php';
+
 session_start();
 $status=validateSession();
 if($status)
@@ -10,6 +12,7 @@ if(isset($_SESSION['not_register']))
 {
   if($_SESSION['not_register']=='true')
   {
+    logMessage('User registration error due to:'.$_SESSION['reason']);
     unset($_SESSION['not_register']);
     echo $_SESSION['reason'];
   }
@@ -54,6 +57,7 @@ function validateFields()
 // email id should be well formed
 
 }
+//this function checks whether username so far typed is available using AJAX
 function validate(text)
 {
   var xmlHttp=new XMLHttpRequest();

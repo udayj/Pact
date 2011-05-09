@@ -1,5 +1,6 @@
 <?php
 require_once 'validateSession.php';
+require_once 'logger.php';
 session_start();
 
 ?>
@@ -16,6 +17,7 @@ function signup()
 
 
 <?php
+//logMessage('Accessed mainpage.php');
 $status=validateSession();
 if(!$status)
 {
@@ -30,6 +32,7 @@ if(!$status)
 //Else check if account is deactivated
 else if(isset($_SESSION['notactivate']) && $_SESSION['notactivate']=='true')
   {
+    
     $activate='Account not yet activated ... pls click on link sent to your email to activate';
   }
 //Unset the variables for next submition
@@ -49,7 +52,7 @@ else if(isset($_SESSION['notactivate']) && $_SESSION['notactivate']=='true')
 }
 else
 {
-//User is logged in....redirect to summary.php page
+    //User is logged in....redirect to summary.php page
     echo "Logged in currently";
     echo "Hi ".$_SESSION['username'];
     header('Location: summary.php');

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '/home/uday/code/nrk-predis-8787930/examples/SharedConfigurations.php';
+require_once 'logger.php';
 //echo "Checking with github"
 
 $redis = new Predis\Client($single_server);
@@ -34,6 +35,7 @@ else
 	     }
              else
              {
+                logMessage('Accessed account without activation');
                 $_SESSION['notactivate']='true';
                 //echo 'Account not yet activated	';
                 header('Location: mainpage.php');
@@ -42,12 +44,14 @@ else
 	  else
 	  {
 	   //  echo 'Incorrect username or password given'.'<br>';
+             logMessage('Incorrect password used');
              errormsg();
            //  header('refresh:5;url=mainpage.php');
 	  }
 	}
 	else
 	{
+           logMessage('Incorrect username used');
            errormsg();
 	   // echo 'Incorrect username or password given'.'<br>';
 	}
